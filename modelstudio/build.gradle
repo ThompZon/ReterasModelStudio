@@ -17,9 +17,17 @@ task run(dependsOn: classes, type: JavaExec) {
     setIgnoreExitValue(true)
 }
 
+task extractLwjglManifest(type: Copy) {
+    from {
+        configurations.compileClasspath.filter { it.name == "lwjgl-${lwjglVersion}.jar" }
+                .collect { zipTree(it) }
+    }
+    include 'META-INF/MANIFEST.MF'
+    into "$buildDir/tmp"
+}
+
 task dist(type: Jar) {
     // From http://cmoz.me/blog/2014/11/service-files-uber-jars-and-gradle/
-
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     doFirst {
         def serviceDir = file("$buildDir/META-INF/services")
@@ -37,12 +45,43 @@ task dist(type: Jar) {
     from files(sourceSets.main.output.classesDirs)
     from files(sourceSets.main.output.resourcesDir)
 
+    dependsOn extractLwjglManifest
     manifest {
-        attributes 'Main-Class': project.mainClassName
+        from (extractLwjglManifest.destinationDir.path + '/META-INF/MANIFEST.MF') {
+            eachEntry { details ->
+                if (details.key == 'Created-By')
+                    details.value = System.getProperty('java.runtime.version') + ' (' + System.getProperty('java.vendor') + ')'
+                else if (details.key == 'Ant-Version')
+                    details.exclude()
+            }
+        }
+        attributes(
+                'Main-Class': project.mainClassName,
+                'Built-By': System.getProperty('user.name'),
+                'Gradle-Version': 'Gradle ' + gradle.getGradleVersion(),
+        )
+
     }
 
     from(configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) }) {
         exclude 'META-INF/**' // Don't let Gradle merge service files
+    }
+
+    graalvmNative {
+        toolchainDetection = false
+        binaries {
+            main {
+                imageName = project.name
+                mainClass = project.mainClassName
+
+                buildArgs.add('--initialize-at-run-time=org.lwjgl')
+                buildArgs.add('--native-image-info')
+                buildArgs.add('-march=compatibility')
+            }
+        }
+        binaries.all {
+            resources.autodetect()
+        }
     }
 
     // Include service files from the buildDir.

@@ -107,7 +107,7 @@ public class WindowsMenu extends JMenu {
 		viewsMenu.add(createMenuItem("Contents", KeyEvent.VK_T, e -> ProgramGlobals.getRootWindowUgg().newWindow(new ModelComponentsView().setModelPanel(ProgramGlobals.getCurrentModelPanel()))));
 		viewsMenu.add(createMenuItem("Footer", KeyEvent.VK_F, e -> FloatingWindowFactory.openNewWindowWithKB(ProgramGlobals.getRootWindowUgg().getWindowHandler2().getTimeSliderView(), ProgramGlobals.getRootWindowUgg())));
 
-		viewsMenu.add(createMenuItem("Matrix Eater Script", KeyEvent.VK_H, KeyStroke.getKeyStroke("control P"), e -> ScriptView.openScriptView()));
+		//viewsMenu.add(createMenuItem("Matrix Eater Script", KeyEvent.VK_H, KeyStroke.getKeyStroke("control P"), e -> ScriptView.openScriptView()));
 		return viewsMenu;
 	}
 

@@ -1,0 +1,17 @@
+{
+  "resources": {
+    "includes": [
+      {
+        "pattern": ".*"
+      }
+    ],
+    "excludes": [
+      {
+        "pattern": ".*.class"
+      },
+      {
+        "pattern": ".*/META-INF/.*"
+      }
+    ]
+  }
+}

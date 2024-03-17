@@ -16,6 +16,10 @@ buildscript {
     }
 }
 
+plugins {
+    id 'org.graalvm.buildtools.native' version '0.10.1'
+}
+
 allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
@@ -29,6 +33,7 @@ allprojects {
 		image4jVersion = '0.7'
 		rsyntaxtextareaVersion = '3.3.4'
         nashornVersion = '15.2'
+        //graalvmJsVersion = '23.0.3' //Maybe this is only for scripting engine?
     }
 
     repositories {
@@ -47,7 +52,7 @@ allprojects {
 
 project(":modelstudio") {
     apply plugin: "java"
-
+    apply plugin: "org.graalvm.buildtools.native"
 
     dependencies {
         implementation project(":thirdparty")
@@ -57,13 +62,16 @@ project(":modelstudio") {
         implementation "com.github.inwc3:JMPQ3:1.7.14"
         implementation "org.json:json:20200518"
         implementation "org.openjdk.nashorn:nashorn-core:${nashornVersion}"
+
+        //implementation group: 'org.graalvm.js', name: 'js', version: ${graalvmJsVersion}
+        //implementation group: 'org.graalvm.js', name: 'js-scriptengine', version: ${graalvmJsVersion}
+        //implementation group: 'org.graalvm.truffle', name: 'truffle-api', version: ${graalvmJsVersion}
     }
 }
 
 
 project(":thirdparty") {
     apply plugin: "java"
-
 
     dependencies {
         apiElements "com.jtattoo:JTattoo:$jtattooVersion"
